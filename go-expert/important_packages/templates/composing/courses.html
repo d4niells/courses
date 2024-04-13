@@ -1,0 +1,16 @@
+<table>
+  <thead>
+    <tr>
+      <td>Name</td>
+      <td>Duration</td>
+    </tr>
+  </thead>
+  <tbody>
+    {{ range . }}
+    <tr>
+      <td>{{ .Name | ToUpper }}</td>
+      <td>{{ .Duration | ToTime | ToUpper }}</td>
+    </tr>
+    {{ end }}
+  </tbody>
+</table>

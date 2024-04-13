@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Search Brazillian CEP</title>
+
+    <style>
+      table, tr, td {
+        border: dotted 1px black;
+      }
+
+      td {
+        padding: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Search Brazillian CEP</h1>
+    <p>We find some info about the searched cep:</p>
+
+    <table>
+      <thead>
+        <tr>
+          <td>Cep</td>
+          <td>Address</td>
+          <td>Complement</td>
+          <td>Area code</td>
+          <td>Siafi</td>
+          <td>IBGE</td>
+          <td>GIA</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{ .Cep }}</td>
+          <td>{{ .Logradouro }}, {{ .Bairro }}, {{ .Localidade }} - {{ .UF }}</td>
+          <td>{{ .Complemento }}</td> 
+          <td>{{ .DDD }}</td> 
+          <td>{{ .Siafi }}</td> 
+          <td>{{ .IBGE }}</td> 
+          <td>{{ .GIA }}</td> 
+        </tr>
+      </tbody>
+    </table>
+  </body>
+</html>

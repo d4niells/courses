@@ -11,4 +11,4 @@ services:
       MYSQL_DATABASE: goexpert
       MYSQL_PASSWORD: root
     ports:
-      - 3305:3305
+      - 3306:3306

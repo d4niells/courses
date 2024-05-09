@@ -2,13 +2,13 @@ package handlers
 
 import (
 	"encoding/json"
-	"net/http"
-
 	"github.com/d4niells/api/internal/dto"
 	"github.com/d4niells/api/internal/entity"
 	"github.com/d4niells/api/internal/infra/database"
 	entityPkg "github.com/d4niells/api/pkg/entity"
 	"github.com/go-chi/chi/v5"
+	"net/http"
+	"strconv"
 )
 
 type ProductHandler struct {
@@ -113,4 +113,28 @@ func (h *ProductHandler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
+}
+
+func (h *ProductHandler) GetProducts(w http.ResponseWriter, r *http.Request) {
+	page, err := strconv.Atoi(r.URL.Query().Get("page"))
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	products, err := h.ProductDB.FindAll(page, limit, r.URL.Query().Get("sort"))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(products)
 }

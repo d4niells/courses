@@ -34,14 +34,18 @@ func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 
-	r.Get("/products", productHandler.GetProducts)
-	r.Post("/products", productHandler.CreateProduct)
-	r.Get("/products/{id}", productHandler.GetProduct)
-	r.Put("/products/{id}", productHandler.UpdateProduct)
-	r.Delete("/products/{id}", productHandler.DeleteProduct)
+	r.Route("/products", func(r chi.Router) {
+		r.Get("/", productHandler.GetProducts)
+		r.Post("/", productHandler.CreateProduct)
+		r.Get("/{id}", productHandler.GetProduct)
+		r.Put("/{id}", productHandler.UpdateProduct)
+		r.Delete("/{id}", productHandler.DeleteProduct)
+	})
 
-	r.Post("/users", userHandler.Create)
-	r.Post("/users/login", userHandler.Login)
+	r.Route("/users", func(r chi.Router) {
+		r.Post("/", userHandler.Create)
+		r.Post("/login", userHandler.Login)
+	})
 
 	http.ListenAndServe(":8000", r)
 }

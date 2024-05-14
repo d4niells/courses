@@ -19,7 +19,7 @@ func TestUser(t *testing.T) {
 	t.Run("validate user password", func(t *testing.T) {
 		user, err := NewUser("John Doe", "johndoe@email.com", "123456")
 		assert.Nil(t, err)
-		assert.True(t, user.validatePassword("123456"))
+		assert.True(t, user.ValidatePassword("123456"))
 		assert.NotEqual(t, "123456", user.Password)
 	})
 }

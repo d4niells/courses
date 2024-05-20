@@ -29,6 +29,17 @@ func NewUserHandler(
 	return &UserHandler{UserDB: userDB, Jwt: jwt, JwtExperiesIn: jwtExperiesIn}
 }
 
+// Login godoc
+// @Summary Get a user JWT
+// @Description Get a user JWT
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param request body dto.LoginUserInput true "User credentials"
+// @Success 200 {object} dto.LoginUserOutput
+// @Failure 404 {object} Error
+// @Failure 500 {object} Error
+// @Router /users/login [post]
 func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var user dto.LoginUserInput
 	err := json.NewDecoder(r.Body).Decode(&user)
@@ -39,7 +50,9 @@ func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 	u, err := h.UserDB.FindByEmail(user.Email)
 	if err != nil {
-		w.WriteHeader(http.StatusUnauthorized)
+		w.WriteHeader(http.StatusNotFound)
+		err := Error{Message: err.Error()}
+		json.NewEncoder(w).Encode(err)
 		return
 	}
 
@@ -56,11 +69,7 @@ func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	accessToken := struct {
-		AccessToken string `json:"access_token"`
-	}{
-		AccessToken: tokenStr,
-	}
+	accessToken := dto.LoginUserOutput{AccessToken: tokenStr}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -70,7 +79,7 @@ func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 // Create user godoc
 // @Summary Create user
 // @Description Create user
-// @Tags users
+// @Tags Users
 // @Accept json
 // @Produce json
 // @Param request body dto.CreateUserInput true "user request"

@@ -20,6 +20,7 @@ func NewProductHandler(DB database.ProductInterface) *ProductHandler {
 }
 
 // CreateProduct Creates a new product
+//
 // @Summary Create product
 // @Description Create products
 // @Tags products
@@ -61,8 +62,9 @@ func (h *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetProduct Returns a existing product by ID
+//
 // @Summary Get product
-// @Description Get products
+// @Description Find products by ID
 // @Tags products
 // @Accept json
 // @Produce json
@@ -93,8 +95,9 @@ func (h *ProductHandler) GetProduct(w http.ResponseWriter, r *http.Request) {
 }
 
 // UpdateProduct Updates an existing product by ID
+//
 // @Summary Update product
-// @description Update product
+// @description Update existing products by ID
 // @Tags products
 // @Accept json
 // @Produce json
@@ -147,8 +150,9 @@ func (h *ProductHandler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 }
 
 // DeleteProduct Deletes an existing product by ID
+//
 // @Summary Delete product
-// @Description Delete product
+// @Description Delete existing products by ID
 // @Tags products
 // @Accept json
 // @Produce json
@@ -185,8 +189,9 @@ func (h *ProductHandler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetProducts Lists all existing products with pagination
+//
 // @Summary List products
-// @Description Get all products
+// @Description List all existing products with pagination
 // @Tags products
 // @Accept json
 // @Produce json

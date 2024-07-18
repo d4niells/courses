@@ -47,7 +47,7 @@ func (s *EventDispatcherTestSuite) SetupTest() {
 	s.handler2 = TestEventHandler{ID: 2}
 	s.handler3 = TestEventHandler{ID: 3}
 	s.event = TestEvent{Name: "Test", Payload: "Test"}
-	s.event2 = TestEvent{Name: "Test", Payload: "Test"}
+	s.event2 = TestEvent{Name: "Test2", Payload: "Test2"}
 }
 
 func (suite *EventDispatcherTestSuite) TestEventDispatcher_Register() {
@@ -71,6 +71,38 @@ func (suite *EventDispatcherTestSuite) TestEventDispatcher_Register_WithSameHand
 	err = suite.eventDispatcher.Register(suite.event.GetName(), &suite.handler)
 	suite.EqualError(err, ErrEventHandlerAlreadyRegistered.Error())
 	suite.Len(suite.eventDispatcher.handlers[suite.event.GetName()], 1)
+}
+
+func (suite *EventDispatcherTestSuite) TestEventDispatcher_Clear() {
+	err := suite.eventDispatcher.Register(suite.event.GetName(), &suite.handler)
+	suite.NoError(err)
+	suite.Len(suite.eventDispatcher.handlers[suite.event.GetName()], 1)
+
+	err = suite.eventDispatcher.Register(suite.event.GetName(), &suite.handler2)
+	suite.NoError(err)
+	suite.Len(suite.eventDispatcher.handlers[suite.event.GetName()], 2)
+
+	// Event 2
+	err = suite.eventDispatcher.Register(suite.event2.GetName(), &suite.handler3)
+	suite.NoError(err)
+	suite.Len(suite.eventDispatcher.handlers[suite.event2.GetName()], 1)
+
+	suite.eventDispatcher.Clear()
+	suite.Len(suite.eventDispatcher.handlers, 0)
+}
+
+func (suite *EventDispatcherTestSuite) TestEventDispatcher_Has() {
+	err := suite.eventDispatcher.Register(suite.event.GetName(), &suite.handler)
+	suite.NoError(err)
+	suite.Len(suite.eventDispatcher.handlers[suite.event.GetName()], 1)
+
+	err = suite.eventDispatcher.Register(suite.event.GetName(), &suite.handler2)
+	suite.NoError(err)
+	suite.Len(suite.eventDispatcher.handlers[suite.event.GetName()], 2)
+
+	assert.True(suite.T(), suite.eventDispatcher.Has(suite.event.GetName(), &suite.handler))
+	assert.True(suite.T(), suite.eventDispatcher.Has(suite.event.GetName(), &suite.handler))
+	assert.False(suite.T(), suite.eventDispatcher.Has(suite.event.GetName(), &suite.handler3))
 }
 
 func TestSuite(t *testing.T) {

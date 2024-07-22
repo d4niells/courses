@@ -1,6 +1,7 @@
 package events
 
 import (
+	"sync"
 	"testing"
 	"time"
 
@@ -30,7 +31,7 @@ type TestEventHandler struct {
 	ID int
 }
 
-func (h *TestEventHandler) Handle(event EventInterface) {}
+func (h *TestEventHandler) Handle(event EventInterface, wg *sync.WaitGroup) {}
 
 type EventDispatcherTestSuite struct {
 	suite.Suite
@@ -106,12 +107,38 @@ func (suite *EventDispatcherTestSuite) TestEventDispatcher_Has() {
 	assert.False(suite.T(), suite.eventDispatcher.Has(suite.event.GetName(), &suite.handler3))
 }
 
+func (suite *EventDispatcherTestSuite) TestEventDispatcher_Remove() {
+	// Event 1
+	err := suite.eventDispatcher.Register(suite.event.GetName(), &suite.handler)
+	suite.NoError(err)
+	suite.Len(suite.eventDispatcher.handlers[suite.event.GetName()], 1)
+
+	err = suite.eventDispatcher.Register(suite.event.GetName(), &suite.handler2)
+	suite.NoError(err)
+	suite.Len(suite.eventDispatcher.handlers[suite.event.GetName()], 2)
+
+	// Event 2
+	err = suite.eventDispatcher.Register(suite.event2.GetName(), &suite.handler3)
+	suite.NoError(err)
+	suite.Len(suite.eventDispatcher.handlers[suite.event2.GetName()], 1)
+
+	err = suite.eventDispatcher.Remove(suite.event.GetName(), &suite.handler)
+	suite.NoError(err)
+	suite.Len(suite.eventDispatcher.handlers[suite.event.GetName()], 1)
+	suite.Equal(&suite.handler2, suite.eventDispatcher.handlers[suite.event.GetName()][0])
+
+	err = suite.eventDispatcher.Remove(suite.event2.GetName(), &suite.handler3)
+	suite.NoError(err)
+	suite.Len(suite.eventDispatcher.handlers[suite.event2.GetName()], 0)
+}
+
 type MockHandler struct {
 	mock.Mock
 }
 
-func (m *MockHandler) Handle(event EventInterface) {
+func (m *MockHandler) Handle(event EventInterface, wg *sync.WaitGroup) {
 	m.Called(event)
+	wg.Done()
 }
 
 func (suite *EventDispatcherTestSuite) TestEventDispatcher_Dispatch() {
